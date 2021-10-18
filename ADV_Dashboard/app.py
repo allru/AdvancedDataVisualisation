@@ -46,7 +46,10 @@ def update_graph(option_slctd):
     dff = dff[dff["state"] == option_slctd]
 
     # Plotly Express
-    fig = px.scatter(dff, x='mag', y='depth', color="depth")
+    fig = px.scatter_mapbox(df, lat="latitude", lon="longitude", hover_name="state",
+                            hover_data=["mag"],
+                            color_discrete_sequence=["fuchsia"], zoom=2.5, height=800)
+    fig.update_layout(mapbox_style="open-street-map")
 
     fig2 = px.scatter(dff, x="latitude", y="longitude",
                       color="mag", size="depth")
