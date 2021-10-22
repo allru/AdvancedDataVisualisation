@@ -14,7 +14,7 @@ dff = dff.drop(['unknown'], axis=1)
 
 # time aufteilen in tage und uhrzeit
 dff = pd.concat([dff, dff['time'].str.split('T', expand=True)], axis=1)
-dff.drop(['time'], axis=1)
+dff = dff.drop(['time'], axis=1)
 dff.rename(columns={0: 'date', 1: 'time'}, inplace=True)
 
 
@@ -40,4 +40,16 @@ for element in dff['state']:
         print(element)
 """
 
-dff.to_csv('clean_data.csv')
+# Leere Staaten füllen
+dff.loc[dff['state'].isnull(),'state'] = dff['place']
+
+# Weitere Probleme...
+for element in dff['state']:
+    if element not in state_names['State'].values:
+        print(element)
+
+for element in dff['depth']:
+    if element < 0:
+        print(element)
+
+#dff.to_csv('clean_data.csv')

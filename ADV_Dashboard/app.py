@@ -8,11 +8,8 @@ from dash.dependencies import Input, Output
 
 app = dash.Dash(__name__)
 
-df = pd.read_csv('ErdbebenDaten.csv')
-
-df = pd.concat([df, df['place'].str.split(', ', expand=True)], axis=1)
-
-df.rename(columns={0: 'place', 1: 'state'}, inplace=True)
+state_names = pd.read_csv('stateAbbreviations.csv')
+df = pd.read_csv('clean_data.csv')
 
 
 app.layout = html.Div([
@@ -21,12 +18,10 @@ app.layout = html.Div([
     html.H4("Numbers and facts about earthquakes in the world", style={'text-align': 'left'}),
 
     dcc.Dropdown(id='state',
-                 options=[
-                     {"label": "Nevada", "value": 'Nevada'},
-                     {"label": "Texas", "value": 'Texas'},
-                     {"label": "Washington", "value": 'Washington'}],
+                 options=[{"label": x, "value": x}
+                          for x in state_names['State']],
                  multi=False,
-                 value='Nevada',
+                 value='Texas',
                  style={"width": "40%"}),
 
     dcc.Graph(id='plot1', figure={}),
@@ -41,18 +36,20 @@ app.layout = html.Div([
      Output(component_id='plot2', component_property='figure')],
     [Input(component_id='state', component_property='value')]
 )
-def update_graph(option_slctd):
+def update_graph(state):
     dff = df.copy()
-    dff = dff[dff["state"] == option_slctd]
+    dff = dff[dff["state"] == state]
+    print(dff)
 
     # Plotly Express
-    fig = px.scatter_mapbox(df, lat="latitude", lon="longitude", hover_name="state",
+    fig = px.scatter_mapbox(dff, lat="latitude", lon="longitude", hover_name="state",
                             hover_data=["mag"],
-                            color_discrete_sequence=["fuchsia"], zoom=2.5, height=800)
+                            color_discrete_sequence=["fuchsia"], zoom=2.5, height=800, color='mag',
+                            size='mag')
     fig.update_layout(mapbox_style="open-street-map")
 
-    fig2 = px.scatter(dff, x="latitude", y="longitude",
-                      color="mag", size="depth")
+    fig2 = px.histogram(df, x="state", title="Earthquakes in US since 01.01.2016-31.12.2020", height=800,
+                        color_discrete_sequence=["fuchsia"]).update_xaxes(categoryorder='total descending')
 
     return fig, fig2
 
