@@ -40,16 +40,27 @@ for element in dff['state']:
         print(element)
 """
 
+# Negative Werte in absolute umwandeln
+dff['depth'] = dff['depth'].abs()
+
 # Leere Staaten füllen
-dff.loc[dff['state'].isnull(),'state'] = dff['place']
+dff.loc[dff['state'].isnull(), 'state'] = dff['place']
+
 
 # Weitere Probleme...
+dff = dff.drop(dff[dff.state == 'Canada'].index)
+dff = dff.drop(dff[dff.state == 'Mexico'].index)
+
 for element in dff['state']:
     if element not in state_names['State'].values:
-        print(element)
+        for State in state_names['State'].values:
+            if State in element:
+                dff['state'] = dff['state'].replace([element], State)
 
-for element in dff['depth']:
-    if element < 0:
-        print(element)
 
-#dff.to_csv('clean_data.csv')
+for element in dff['state']:
+    if element not in state_names['State'].values:
+        dff = dff.drop(dff[dff.state == element].index)
+
+
+# dff.to_csv('clean_data.csv')

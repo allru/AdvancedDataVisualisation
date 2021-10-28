@@ -15,11 +15,11 @@ df = pd.read_csv('clean_data.csv')
 app.layout = html.Div([
 
     html.H1("Earthquake Dashboard with Dash", style={'text-align': 'center'}),
-    html.H4("Numbers and facts about earthquakes in the world", style={'text-align': 'left'}),
+    html.H4("Numbers and facts about earthquakes on the U.S. Mainland", style={'text-align': 'left'}),
 
     dcc.Dropdown(id='state',
                  options=[{"label": x, "value": x}
-                          for x in state_names['State']],
+                          for x in df["state"]],
                  multi=False,
                  value='Texas',
                  style={"width": "40%"}),
