@@ -17,6 +17,7 @@ app.layout = html.Div([
     html.H1("Earthquake Dashboard with Dash", style={'text-align': 'center'}),
     html.H4("Numbers and facts about earthquakes on the U.S. Mainland", style={'text-align': 'left'}),
 
+
     dcc.Dropdown(id='state',
                  options=[{"label": x, "value": x}
                           for x in df["state"].unique()],
@@ -24,16 +25,32 @@ app.layout = html.Div([
                  value=['Texas', 'California'],
                  style={"width": "40%"}),
 
-    dcc.Graph(id='plot1', figure={}),
-    html.Br(),
-
-    dcc.Graph(id='plot2', figure={})
+    html.Div(children=[
+        dcc.Graph(id='plot1', figure={}),
+        html.Br(),
+        dcc.Graph(id='plot2', figure={})],
+                            style={'display': 'inline-block',
+                                   'vertical-align': 'top',
+                                   'margin-left': '3vw', 'margin-top': '3vw',
+                                   'width': '40vw', 'height': '40vh'
+                                   }),
+    html.Div(children=[
+        dcc.Graph(id='plot3', figure={}),
+        html.Br(),
+        dcc.Graph(id='plot4', figure={})],
+        style={'display': 'inline-block',
+               'vertical-align': 'top',
+               'margin-left': '3vw', 'margin-top': '3vw',
+               'width': '40vw', 'height': '40vh'
+               })
 ])
 
 
 @app.callback(
     [Output(component_id='plot1', component_property='figure'),
-     Output(component_id='plot2', component_property='figure')],
+     Output(component_id='plot2', component_property='figure'),
+     Output(component_id='plot3', component_property='figure'),
+     Output(component_id='plot4', component_property='figure'),],
     [Input(component_id='state', component_property='value')]
 )
 def update_graph(state):
@@ -42,16 +59,23 @@ def update_graph(state):
         dff = dff[dff['state'].isin(state)]
 
     # Plotly Express
-    fig = px.scatter_mapbox(dff, lat="latitude", lon="longitude", hover_name="state",
+    fig1 = px.scatter_mapbox(dff, title="Map-View of selected U.S. States", lat="latitude", lon="longitude", hover_name="state",
                             hover_data=["mag"],
                             color_discrete_sequence=["fuchsia"], zoom=2.5, height=800, color='mag',
                             size='mag')
-    fig.update_layout(mapbox_style="open-street-map")
+    fig1.update_layout(mapbox_style="open-street-map")
 
     fig2 = px.histogram(dff, x="state", title="Earthquakes in US since 01.01.2016-31.12.2020", height=800,
                         color_discrete_sequence=["fuchsia"]).update_xaxes(categoryorder='total descending')
 
-    return fig, fig2
+    fig3 = px.histogram(dff, x="state", title="Earthquakes in US since 01.01.2016-31.12.2020", height=800,
+                        color_discrete_sequence=["fuchsia"]).update_xaxes(categoryorder='total descending')
+
+    fig4 = px.histogram(dff, x="state", title="Earthquakes in US since 01.01.2016-31.12.2020", height=800,
+                        color_discrete_sequence=["fuchsia"]).update_xaxes(categoryorder='total descending')
+
+
+    return fig1, fig2, fig3, fig4
 
 
 if __name__ == '__main__':
