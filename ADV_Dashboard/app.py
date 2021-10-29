@@ -19,9 +19,9 @@ app.layout = html.Div([
 
     dcc.Dropdown(id='state',
                  options=[{"label": x, "value": x}
-                          for x in df["state"]],
-                 multi=False,
-                 value='Texas',
+                          for x in df["state"].unique()],
+                 multi=True,
+                 value=['Texas', 'California'],
                  style={"width": "40%"}),
 
     dcc.Graph(id='plot1', figure={}),
@@ -38,8 +38,8 @@ app.layout = html.Div([
 )
 def update_graph(state):
     dff = df.copy()
-    dff = dff[dff["state"] == state]
-    print(dff)
+    if bool(state):  # If nothing is selected, this is false so no filtering
+        dff = dff[dff['state'].isin(state)]
 
     # Plotly Express
     fig = px.scatter_mapbox(dff, lat="latitude", lon="longitude", hover_name="state",
@@ -48,7 +48,7 @@ def update_graph(state):
                             size='mag')
     fig.update_layout(mapbox_style="open-street-map")
 
-    fig2 = px.histogram(df, x="state", title="Earthquakes in US since 01.01.2016-31.12.2020", height=800,
+    fig2 = px.histogram(dff, x="state", title="Earthquakes in US since 01.01.2016-31.12.2020", height=800,
                         color_discrete_sequence=["fuchsia"]).update_xaxes(categoryorder='total descending')
 
     return fig, fig2

@@ -4,8 +4,6 @@ import plotly.express as px
 
 df = pd.read_csv('clean_data.csv')
 
-print(df['state'])
-
 
 fig = px.scatter_mapbox(df, lat="latitude", lon="longitude", hover_name="state", hover_data=["mag"],
                         color_discrete_sequence=["fuchsia"], zoom=2.5, height=800, color='mag',
