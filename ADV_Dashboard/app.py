@@ -1,7 +1,6 @@
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -12,19 +11,27 @@ app = dash.Dash(__name__)
 state_names = pd.read_csv('stateAbbreviations.csv')
 df = pd.read_csv('clean_data.csv')
 
+colors = {
+        'background': '#acacfc',
+        'text': '#0f0f6b'
+    }
+
 app.layout = html.Div([
 
-    html.H1("Earthquake Dashboard with Dash", style={'text-align': 'center'}),
-    html.H4("Numbers and facts about earthquakes on the U.S. Mainland", style={'text-align': 'left'}),
+    html.H1("EARTHQUAKE DASHBOARD WITH DASH", style={'text-align': 'center', 'color': colors['text']}),
+    html.H2("Advanced Data Visualisation - Gruppe 5", style={'text-align': 'center', 'color': colors['text']}),
+    html.H3("V. Elpeza, C. Marxer und A.Ruggia", style={'text-align': 'center', 'color': colors['text']}),
+    html.H4("Numbers and facts about earthquakes on the U.S. Mainland",
+            style={'text-align': 'left', 'color': colors['text']}),
 
     dcc.Dropdown(id='state',
                  options=[{"label": x, "value": x}
                           for x in df["state"].unique()],
                  multi=True,
                  value=['Texas', 'California'],
-                 style={"width": "40%"}),
+                 style={"width": "40%", 'color': colors['text'], 'color': colors['text']}),
 
-    html.H4("Wähle die Reichweite der Erdbebenstärken aus: ", style={'text-align': 'left'}),
+    html.H4("Wähle die Reichweite der Erdbebenstärken aus: ", style={'text-align': 'left', 'color': colors['text']}),
 
     dcc.RangeSlider(id='magn_range',
                     marks={i: 'Magnitude {}'.format(i) for i in range(11)},
@@ -55,6 +62,7 @@ app.layout = html.Div([
                'margin-left': '3vw', 'margin-top': '3vw',
                'width': '40vw', 'height': '40vh'
                }),
+
 ])
 
 
@@ -80,6 +88,7 @@ def update_graph(state, magn_range):
     # Plotly Express
     fig1 = px.scatter_mapbox(dff, title="Map-View of selected U.S. States", lat="latitude", lon="longitude",
                              hover_name="state",
+                             template="ggplot2",
                              hover_data=["mag"],
                              color_discrete_sequence=["fuchsia"], zoom=2.5, height=800, color='mag',
                              size='mag')
@@ -88,7 +97,8 @@ def update_graph(state, magn_range):
     fig2 = px.histogram(dff, x="state",
                         title="Vergleich der Anzahl Erdbeben der US-Bundesstaaten von 01.01.2016-31.12.2020",
                         height=800,
-                        color_discrete_sequence=["fuchsia"]).update_xaxes(categoryorder='total descending')
+                        template="ggplot2",
+                        color_discrete_sequence=['rgba(0,0,128,0.8)']).update_xaxes(categoryorder='total descending')
     # Timelinediagramm
     fig3 = go.Figure()
     # Gruppierung nach Erdbeben pro Jahr
@@ -103,9 +113,10 @@ def update_graph(state, magn_range):
                                      ))
     fig3.update_layout(
         title="Anzahl Erdbeben pro Jahr",
-        plot_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(137, 40, 212,0)',
         # width=1650,
         height=800,
+        template="ggplot2",
         showlegend=False,
         xaxis=dict(
             tickmode='linear',
@@ -116,13 +127,14 @@ def update_graph(state, magn_range):
     fig3.update_yaxes(showline=True, linewidth=2, linecolor="rgb(211, 211, 211)", gridcolor="rgb(211, 211, 211)")
 
     fig4 = px.scatter(dff, x="depth", y="mag", color='mag',
-                      title="Scatterplot bezügliche Erdbebenstärke und Entstehungstiefe", height=800, )
+                      title="Scatterplot bezügliche Erdbebenstärke und Entstehungstiefe", height=800,template="ggplot2")
     fig4.update_xaxes(ticksuffix=" km")
 
     fig5 = px.box(dff, x="state", y="mag")
     fig5.update_layout(
         title="Erdbeben in USA: Box-Plot",
-        plot_bgcolor='rgba(0,0,0,0)',
+        template="ggplot2",
+        plot_bgcolor='rgba(255,255,255,0)',
         # width=1650,
         height=800,
         showlegend=False)
