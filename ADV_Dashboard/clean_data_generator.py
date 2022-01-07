@@ -12,11 +12,11 @@ not_usa = dff[dff['unknown'].notnull()].index
 dff = dff.drop(not_usa, axis=0)
 dff = dff.drop(['unknown'], axis=1)
 
-# time aufteilen in tage und uhrzeit
+# time aufteilen in tage und uhrzeit sowie jahr als neues Attribut
 dff = pd.concat([dff, dff['time'].str.split('T', expand=True)], axis=1)
 dff = dff.drop(['time'], axis=1)
 dff.rename(columns={0: 'date', 1: 'time'}, inplace=True)
-
+dff['year'] = pd.DatetimeIndex(dff['date']).year
 
 # State-Names vereinheitlichen
 state_names = pd.read_csv('stateAbbreviations.csv')
@@ -63,4 +63,4 @@ for element in dff['state']:
         dff = dff.drop(dff[dff.state == element].index)
 
 
-# dff.to_csv('clean_data.csv')
+dff.to_csv('clean_data.csv')
