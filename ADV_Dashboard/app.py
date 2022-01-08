@@ -2,11 +2,12 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 from dash.dependencies import Input, Output
 
 app = dash.Dash(__name__)
+server = app.server
 
 state_names = pd.read_csv('stateAbbreviations.csv')
 df = pd.read_csv('clean_data.csv')
@@ -66,10 +67,6 @@ app.layout = html.Div(children=[
                'margin-left': '3vw', 'margin-top': '3vw',
                'width': '40vw', 'height': '40vh'
                }),
-
-
-
-
 ])
 
 
@@ -177,9 +174,8 @@ def update_graph(state, magn_range, jahr):
                           title="Scatterplot bezügliche Erdbebenstärke und Entstehungstiefe", height=800,template="ggplot2")
         fig4.update_xaxes(ticksuffix=" km")
 
-
-
         return fig1, fig2, fig3, fig4
+
 
 if __name__ == '__main__':
     app.run_server(debug=False)
